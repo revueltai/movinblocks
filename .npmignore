@@ -1,0 +1,4 @@
+package/
+npm-debug.log
+.github/
+.local-pack/

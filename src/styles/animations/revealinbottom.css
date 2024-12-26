@@ -1,0 +1,16 @@
+@keyframes revealInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.mb.revealInBottom {
+  animation-name: revealInBottom;
+}

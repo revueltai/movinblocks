@@ -1,0 +1,9 @@
+@import url('./base.css');
+@import url('./animations/fadein.css');
+@import url('./animations/fadeout.css');
+@import url('./animations/slideintop.css');
+@import url('./animations/slideinbottom.css');
+@import url('./animations/slideinleft.css');
+@import url('./animations/slideinright.css');
+@import url('./animations/revealintop.css');
+@import url('./animations/revealinbottom.css');

@@ -1,0 +1,98 @@
+{
+  "name": "movinblocks",
+  "version": "0.0.0",
+  "author": "Ignacio 'Nacho' Revuelta - iamnacho.com",
+  "description": "Movinblocks is a lightweight plugin for animating HTML elements sequentially.",
+  "license": "MIT",
+  "keywords": [
+    "animation",
+    "transition",
+    "transform",
+    "html",
+    "css",
+    "timeline",
+    "effects",
+    "motion",
+    "ScrollTrigger",
+    "easing",
+    "JavaScript",
+    "TypeScript",
+    "CustomEase",
+    "morph",
+    "morphing",
+    "tweening"
+  ],
+  "maintainers": [
+    {
+      "name": "Ignacio Revuelta",
+      "web": "https://iamnacho.com"
+    }
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/types.d.ts",
+      "import": "./dist/movinblocks.esm.js",
+      "require": "./dist/movinblocks.cjs",
+      "default": "./dist/movinblocks.esm.js"
+    },
+    "./styles": "./dist/styles/movinblocks.css",
+    "./styles/base": "./dist/styles/base.css",
+    "./styles/fadeIn": "./dist/styles/animations/fadein.css ",
+    "./styles/fadeOut": "./dist/styles/animations/fadeout.css ",
+    "./styles/revealInBottom": "./dist/styles/animations/revealinbottom.css ",
+    "./styles/revealInTop": "./dist/styles/animations/revealintop.css ",
+    "./styles/slideInTop": "./dist/styles/animations/slideintop.css",
+    "./styles/slideInBottom": "./dist/styles/animations/slideinbottom.css ",
+    "./styles/slideInLeft": "./dist/styles/animations/slideinleft.css ",
+    "./styles/slideInRight": "./dist/styles/animations/slideinright.css "
+  },
+  "sideEffects": false,
+  "source": "src/movinblocks.ts",
+  "types": "src/types.d.ts",
+  "main": "dist/movinblocks.cjs",
+  "module": "dist/movinblocks.esm.js",
+  "browser": "dist/movinblocks.min.js",
+  "unpkg": "dist/movinblocks.umd.js",
+  "scripts": {
+    "prepare": "husky install",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --coverage --watch"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/revueltai/movinblocks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/revueltai/movinblocks/issues"
+  },
+  "homepage": "https://github.com/revueltai/movinblocks",
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "cssnano": "^7.0.6",
+    "eslint": "^9.17.0",
+    "husky": "^9.1.7",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-visualizer": "^5.12.0",
+    "terser": "^5.37.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.6",
+    "vite-plugin-progress": "^0.0.7"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
