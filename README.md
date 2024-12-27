@@ -59,6 +59,7 @@ import 'movinblocks/styles/revealInTop';
 ```
 
 #### Using a CDN
+```html
 <link rel="stylesheet" href="https://unpkg.com/movinblocks/dist/movinblocks.css">
 <script src="https://unpkg.com/movinblocks/dist/movinblocks.min.js"></script>
 
@@ -69,6 +70,7 @@ import 'movinblocks/styles/revealInTop';
       .start();
   })();
 </script>
+```
 
 ## API
 Movinblocks comes with a minimal API:
