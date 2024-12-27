@@ -1,4 +1,4 @@
-![Movinwblocks Logo]()
+![Movinwblocks Logo](https://a.storyblok.com/f/99692/1280x640/09cb8a5371/movinblocks-logo.jpg)
 
 # Movinblocks
 Movinblocks is a lightweight plugin for animating HTML elements sequentially.
@@ -60,8 +60,15 @@ import 'movinblocks/styles/revealInTop';
 
 #### Using a CDN
 ```html
-<link rel="stylesheet" href="https://unpkg.com/movinblocks/dist/movinblocks.css">
 <script src="https://unpkg.com/movinblocks/dist/movinblocks.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/movinblocks@1.0.1/dist/styles/movinblocks.css">
+<!--
+ Or you can import animations individually:
+
+ <link rel="stylesheet" href="https://unpkg.com/movinblocks@1.0.1/dist/styles/base.css">
+ <link rel="stylesheet" href="https://unpkg.com/movinblocks@1.0.1/dist/styles/animations/fadein.css">
+ <link rel="stylesheet" href="https://unpkg.com/movinblocks@1.0.1/dist/styles/animations/revealintop.css">
+ -->
 
 <script>
   (function () {
