@@ -36,6 +36,26 @@ class Movinblocks {
     return true
   }
 
+  _validateArrayProp(prop: string): boolean {
+    const mbOption = this._options[prop as keyof MbOptions]
+    const mbOptionLength = (mbOption as MbOptions[]).length
+    const timelineLength = this._options.timeline!.length
+
+    if (prop === 'overlap') {
+      if (mbOptionLength !== timelineLength - 1) {
+        throw new Error(`The "${prop}" array must be one element shorter than the timeline. ${timelineLength - 1} elements expected, got ${mbOptionLength} instead.`)
+      }
+
+      return true
+    }
+
+    if (mbOptionLength !== timelineLength) {
+      throw new Error(`The "${prop}" array must be the same length as timeline. ${timelineLength} elements expected, got ${mbOptionLength} instead.`)
+    }
+
+    return true
+  }
+
   _handleAnimationStart() {
     this._emit('animationStart')
   }
@@ -83,6 +103,7 @@ class Movinblocks {
     }
 
     if (Utils.isArray(this._options.duration as number[])) {
+      this._validateArrayProp('duration')
       return (this._options.duration as number[])[index]
     }
 
@@ -95,6 +116,7 @@ class Movinblocks {
     }
 
     if (Utils.isArray(this._options.animation as MbAnimation[])) {
+      this._validateArrayProp('animation')
       return (this._options.animation as MbAnimation[])[index]
     }
 
@@ -107,6 +129,7 @@ class Movinblocks {
     }
 
     if (Utils.isArray(this._options.timingFunction as MbTimingFunction[])) {
+      this._validateArrayProp('timingFunction')
       return (this._options.timingFunction as MbTimingFunction[])[index]
     }
 
@@ -120,6 +143,7 @@ class Movinblocks {
       }
 
       if (Utils.isArray(this._options.overlap as number[])) {
+        this._validateArrayProp('overlap')
         return (this._options.overlap as number[])[index - 1]
       }
     }
