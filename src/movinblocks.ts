@@ -6,7 +6,8 @@ import {
   MbEventName,
   MbOptions,
   MbPayload,
-  MbEventCallback
+  MbEventCallback,
+  MbIntersectionOptions
 } from './types'
 
 class Movinblocks {
@@ -18,7 +19,9 @@ class Movinblocks {
   private _overlap: number = 0
   private _options: MbOptions = {}
   private _events: MbEvent = {} as MbEvent
-  private _cssPrefix = '--mb-'
+  private _cssVarPrefix = '--mb-'
+  private _cssBaseClass = 'mb'
+  private _cssVisibleClass = 'mb-visible'
 
   _validateTimeline() {
     if (!this._options.timeline) {
@@ -156,16 +159,22 @@ class Movinblocks {
     let prevDuration = 0
 
     for (const item of this._payload) {
-      item.el.classList.add('mb')
+      item.el.classList.add(this._cssBaseClass)
       item.el.classList.add(item.animation)
 
       if (prevDuration && item.overlap) {
         currDelay += (prevDuration - item.overlap)
       }
 
-      Utils.setCssVar(item.el, `${this._cssPrefix}duration`, `${item.duration}ms`)
-      Utils.setCssVar(item.el, `${this._cssPrefix}delay`, `${currDelay}ms`)
-      Utils.setCssVar(item.el, `${this._cssPrefix}timing-function`, item.timingFunction)
+      Utils.setCssVar(item.el, `${this._cssVarPrefix}duration`, `${item.duration}ms`)
+      Utils.setCssVar(item.el, `${this._cssVarPrefix}timing-function`, item.timingFunction)
+
+      if (this._options.viewportTrigger) {
+        this._addObserver(item.el)
+      } else {
+        Utils.setCssVar(item.el, `${this._cssVarPrefix}delay`, `${currDelay}ms`)
+        item.el.classList.add(this._cssVisibleClass)
+      }
 
       item.el.addEventListener('animationstart', () => this._handleAnimationStart())
       item.el.addEventListener('animationend', () => this._handleAnimationEnd(item.id))
@@ -173,6 +182,26 @@ class Movinblocks {
 
       prevDuration = item.duration
     }
+  }
+
+  _addObserver(el: HTMLElement) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const index = this._options.timeline!.indexOf(entry.target.id)
+
+        if (index !== -1) {
+          const el = entry.target as HTMLElement
+
+          if (entry.isIntersecting) {
+            el.classList.add(this._cssVisibleClass)
+            this._emit('intersect')
+            observer.disconnect()
+          }
+        }
+      })
+    }, this._options.intersectionOptions!)
+
+    observer.observe(el)
   }
 
   _triggerStart() {
@@ -212,6 +241,17 @@ class Movinblocks {
     return this
   }
 
+  setViewportTrigger(intersectionOptions: MbIntersectionOptions | null = null) {
+    this._options.viewportTrigger = true
+    this._options.intersectionOptions = intersectionOptions || {
+      root: null,
+      threshold: 0,
+      rootMargin: '0px'
+    }
+
+    return this
+  }
+
   setAnimation(animation: MbAnimation | MbAnimation[]) {
     this._options.animation = animation
     return this
@@ -241,12 +281,13 @@ class Movinblocks {
 
   destroy() {
     for (const item of this._payload) {
-      item.el.classList.remove('mb')
+      item.el.classList.remove(this._cssBaseClass)
+      item.el.classList.remove(this._cssVisibleClass)
       item.el.classList.remove(item.animation)
 
-      Utils.removeCssVar(item.el, `${this._cssPrefix}duration`)
-      Utils.removeCssVar(item.el, `${this._cssPrefix}delay`)
-      Utils.removeCssVar(item.el, `${this._cssPrefix}timing-function`)
+      Utils.removeCssVar(item.el, `${this._cssVarPrefix}duration`)
+      Utils.removeCssVar(item.el, `${this._cssVarPrefix}delay`)
+      Utils.removeCssVar(item.el, `${this._cssVarPrefix}timing-function`)
 
       item.el.removeEventListener('animationstart', () => this._handleAnimationStart())
       item.el.removeEventListener('animationend', () => this._handleAnimationEnd(item.id))

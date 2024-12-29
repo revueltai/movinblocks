@@ -11,6 +11,6 @@
   }
 }
 
-.mb.revealInBottom {
+.mb.mb-visible.revealInBottom {
   animation-name: revealInBottom;
 }

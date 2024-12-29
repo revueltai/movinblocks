@@ -10,6 +10,6 @@
   }
 }
 
-.mb.slideInRight {
+.mb.mb-visible.slideInRight {
   animation-name: slideInRight;
 }

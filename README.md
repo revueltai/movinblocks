@@ -89,6 +89,7 @@ Movinblocks comes with a minimal API:
 | `setDuration()` | Defines the duration (in milliseconds) for each animation in the sequence (See [setDuration()](#setDuration)). |
 | `setTimingFunction()` | Defines the css timing function for each animation in the sequence (See [setTimingFunction()](#setTimingFunction)). |
 | `setOverlap()`  | Sets the overlap time (in milliseconds) between consecutive animations (See [setOverlap()](#setOverlap)). |
+| `setViewportTrigger()` | Starts the animations when the elements intersects the viewport (See [setViewportTrigger()](#setViewportTrigger)). |
 | `on()`          | Registers a callback for a specific event (e.g., `start`) during the animation (See [on()](#on)). |
 | `start()`       | Initiates the animation sequence based on the configured timeline and settings (See [start()](#start)). |
 | `destroy()`       | Destroy the Movinblocks instance (See [destroy()](#destroy)). |
@@ -239,6 +240,9 @@ setOverlap(overlap: number | number[])
 
 Use `setOverlap()` to set the overlap time (in milliseconds) between the animations of your elements.
 
+Important:
+Overlap is not supported when `setViewportTrigger()` is enabled (See [setViewportTrigger()](#setOverlap-and-setViewportTrigger) for details).
+
 If you want each element to have its own overlap time, declare it as an array of numbers:
 ```typescript
 new Movinblocks()
@@ -251,18 +255,19 @@ Note:
 `setOverlap` takes one value less than the timeline.
 
 So, the `setOverlap([400, 300, 500])` array defines the overlap times for the elements **except for the first one (header)**:
-
-- 0ms for the `header` element id (first element in the timeline):
+```markdown
+1. **0ms** for the `header` element id (first element in the timeline):
   it will start without any overlap.
 
-- 400ms for the `main` element id:
+2. **400ms** for the `main` element id:
   it will start 400ms before `header` finishes.
 
-- 300ms for the `section` element id:
+3. **300ms** for the `section` element id:
   it will start 300ms before `main` finishes.
 
-- 500ms for the `footer` element id:
+4. **500ms** for the `footer` element id:
   it will start 500ms before `section` finishes.
+```
 
 If you want all elements to have the same overlap time, declare it as a number:
 ```typescript
@@ -270,6 +275,46 @@ new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setDuration(1000)
   .setOverlap(350) // all elements have the same overlap time.
+  .start();
+```
+
+### setViewportTrigger
+```typescript
+setViewportTrigger(intersectionOptions: MbIntersectionOptions | null = null)
+```
+
+You can choose to trigger Movinblocks **only when the element enters the viewport**.
+
+```typescript
+new Movinblocks()
+  .setTimeline(['header', 'main', 'section', 'footer'])
+  .setDuration(1000)
+  .setViewportTrigger() // each elements will start animating once inside the viewport.
+  .start();
+```
+
+If you wish to modify the intersection properties, you can provide an `intersectionOptions` object as parameter of the method.
+```typescript
+new Movinblocks()
+  .setTimeline(['header', 'main', 'section', 'footer'])
+  .setDuration(1000)
+  .setViewportTrigger({
+      root: document.querySelector("#myElement"),
+      rootMargin: "100px",
+      threshold: 1.0,
+    })
+  .start();
+```
+
+#### setOverlap and setViewportTrigger
+The **Overlap** functionality is not supported when `setViewportTrigger()` is enabled, as each element animates based on its own appearance in the viewport and no longer adheres to the shared timeline.
+
+```typescript
+new Movinblocks()
+  .setTimeline(['header', 'main', 'section', 'footer'])
+  .setDuration(1000)
+  .setOverlap(400) // ❌ It won't take effect because setViewportTrigger() is defined.
+  .setViewportTrigger()
   .start();
 ```
 

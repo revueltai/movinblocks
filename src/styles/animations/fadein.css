@@ -8,6 +8,6 @@
   }
 }
 
-.mb.fadeIn {
+.mb.mb-visible.fadeIn {
   animation-name: fadeIn;
 }

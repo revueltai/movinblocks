@@ -2,12 +2,18 @@ export type MbAnimation = 'fadeIn' | 'slideInTop' | 'slideInBottom' | 'slideInLe
 
 export type MbTimingFunction = 'ease' | 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | `cubic-bezier(${number}, ${number}, ${number}, ${number})`
 
-export type MbEventName = 'start' | 'end' | 'destroy' | 'animationStart' | 'animationEnd' | 'animationIteration'
+export type MbEventName = 'start' | 'end' | 'destroy' | 'intersect' | 'animationStart' | 'animationEnd' | 'animationIteration'
 
 export type MbEventCallback = (data: any) => void
 
 export type MbEvent = {
   [key in MbEventName]?: MbEventCallback[]
+}
+
+export interface MbIntersectionOptions {
+  root?: Element | null
+  rootMargin?: string
+  threshold?: number
 }
 
 export interface MbOptions {
@@ -16,6 +22,8 @@ export interface MbOptions {
   timingFunction?: MbTimingFunction | MbTimingFunction[]
   duration?: number | number[]
   overlap?: number | number[]
+  viewportTrigger?: boolean
+  intersectionOptions?: MbIntersectionOptions | null
 }
 
 export interface MbPayload {
