@@ -7,7 +7,10 @@ import {
   MbOptions,
   MbPayload,
   MbEventCallback,
-  MbIntersectionOptions
+  MbIntersectionOptions,
+  MbVendorAnimation,
+  MbVendorSchema,
+  MbVendorSchemaObj
 } from './types'
 
 class Movinblocks {
@@ -19,9 +22,19 @@ class Movinblocks {
   private _overlap: number = 0
   private _options: MbOptions = {}
   private _events: MbEvent = {} as MbEvent
-  private _cssVarPrefix = '--mb-'
   private _cssBaseClass = 'mb'
-  private _cssVisibleClass = 'mb-visible'
+  private _cssVarPrefix = ''
+  private _cssVendors = {
+    'animate.css': {
+      varPrefix: 'animate-',
+      cssClassPrefix: 'animate__',
+      defaultCssClasses: ['animate__animated', 'animate__delay-1s'],
+    }
+  }
+
+  _isVendorAnimation(animation: MbAnimation | MbVendorAnimation): boolean {
+    return Boolean(Utils.isObject(animation) && (animation as MbVendorAnimation).vendor)
+  }
 
   _validateTimeline() {
     if (!this._options.timeline) {
@@ -78,6 +91,30 @@ class Movinblocks {
     this._emit('animationIteration')
   }
 
+  _setCssVarPrefix(item: MbPayload) {
+    if (this._isVendorAnimation(item.animation)) {
+      const vendorAnimation = item.animation as MbVendorAnimation
+      this._cssVarPrefix = this._cssVendors[vendorAnimation.vendor].varPrefix
+    } else {
+      this._cssVarPrefix = `${this._cssBaseClass}-`
+    }
+  }
+
+  _setVendorCssClasses(
+    el: HTMLElement,
+    animation: MbVendorAnimation,
+    action: 'add' | 'remove'
+  ) {
+    const vendor: MbVendorSchemaObj = this._cssVendors[animation.vendor as keyof MbVendorSchema]
+
+    if (action === 'add') {
+      el.classList.add(...vendor.defaultCssClasses, `${vendor.cssClassPrefix}${animation.name}`)
+      return
+    }
+
+    el.classList.remove(...vendor.defaultCssClasses, `${vendor.cssClassPrefix}${animation.name}`)
+  }
+
   _setPayload() {
     if (this._options.timeline) {
       let index: number = 0
@@ -113,8 +150,11 @@ class Movinblocks {
     return this._duration
   }
 
-  _setAnimation(index: number): MbAnimation {
-    if (Utils.isString(this._options.animation)) {
+  _setAnimation(index: number): MbAnimation | MbVendorAnimation {
+    if (
+      Utils.isString(this._options.animation) ||
+      Utils.isObject(this._options.animation)
+    ) {
       return this._options.animation
     }
 
@@ -159,12 +199,11 @@ class Movinblocks {
     let prevDuration = 0
 
     for (const item of this._payload) {
-      item.el.classList.add(this._cssBaseClass)
-      item.el.classList.add(item.animation)
-
       if (prevDuration && item.overlap) {
         currDelay += (prevDuration - item.overlap)
       }
+
+      this._setCssVarPrefix(item)
 
       Utils.setCssVar(item.el, `${this._cssVarPrefix}duration`, `${item.duration}ms`)
       Utils.setCssVar(item.el, `${this._cssVarPrefix}timing-function`, item.timingFunction)
@@ -173,7 +212,7 @@ class Movinblocks {
         this._addObserver(item.el)
       } else {
         Utils.setCssVar(item.el, `${this._cssVarPrefix}delay`, `${currDelay}ms`)
-        item.el.classList.add(this._cssVisibleClass)
+        this._setVisibility(item.el)
       }
 
       item.el.addEventListener('animationstart', () => this._handleAnimationStart())
@@ -182,6 +221,22 @@ class Movinblocks {
 
       prevDuration = item.duration
     }
+  }
+
+  _setVisibility(el: HTMLElement, action: 'add' | 'remove' = 'add') {
+    const animation = Utils.findInSet(this._payload, el.id).animation
+
+    if (this._isVendorAnimation(animation)) {
+      this._setVendorCssClasses(el, animation, action)
+      return
+    }
+
+    if (action === 'add') {
+      el.classList.add(this._cssBaseClass, animation)
+      return
+    }
+
+    el.classList.remove(this._cssBaseClass, animation)
   }
 
   _addObserver(el: HTMLElement) {
@@ -193,7 +248,7 @@ class Movinblocks {
           const el = entry.target as HTMLElement
 
           if (entry.isIntersecting) {
-            el.classList.add(this._cssVisibleClass)
+            this._setVisibility(el)
             this._emit('intersect')
             observer.disconnect()
           }
@@ -282,8 +337,8 @@ class Movinblocks {
   destroy() {
     for (const item of this._payload) {
       item.el.classList.remove(this._cssBaseClass)
-      item.el.classList.remove(this._cssVisibleClass)
-      item.el.classList.remove(item.animation)
+      this._setVisibility(item.el, 'remove')
+      this._setCssVarPrefix(item)
 
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}duration`)
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}delay`)
@@ -302,6 +357,8 @@ class Movinblocks {
     this._overlap = 0
     this._options = {}
     this._events = {}
+    this._cssBaseClass = 'mb'
+    this._cssVarPrefix = ''
 
     this._emit('destroy')
   }
