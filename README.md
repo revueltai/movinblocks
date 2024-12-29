@@ -178,6 +178,9 @@ new Movinblocks()
 ##### Vendor Animation
 Here is an example of how to add various animations of [animate.css](https://animate.style/):
 
+**Important: Make sure to import animate.css styles.**
+`import 'animate.css'`
+
 1. **Using the Same Animation for All Elements**
 Apply a shared animate.css animation to all elements in the timeline:
 ```typescript
