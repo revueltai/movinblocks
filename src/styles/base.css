@@ -3,4 +3,5 @@
   animation-delay: var(--mb-delay);
   animation-timing-function: var(--mb-timing-function);
   animation-fill-mode: both;
+  animation-name: none;
 }

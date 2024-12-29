@@ -10,6 +10,6 @@
   }
 }
 
-.mb.slideInTop {
+.mb.mb-visible.slideInTop {
   animation-name: slideInTop;
 }
