@@ -176,12 +176,45 @@ new Movinblocks()
 ```
 
 ##### Vendor Animation
-Here is an example of how to add the `bounceInUp` animation of [animate.css](https://animate.style/):
+Here is an example of how to add various animations of [animate.css](https://animate.style/):
 
+1. **Using the Same Animation for All Elements**
+Apply a shared animate.css animation to all elements in the timeline:
 ```typescript
 new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
-  .setAnimation('animate__animated animate__bounceInUp' as MbCustomAnimation)
+  .setAnimation({ name: 'bounceInUp', vendor: 'animate.css' })
+  .start()
+```
+
+2. **Using Different Animations for Each Element**
+Assign a unique animate.css animation to each element:
+```typescript
+new Movinblocks()
+  .setTimeline(['header', 'main', 'section', 'footer'])
+  .setAnimation([
+    { name: 'fadeIn', vendor: 'animate.css' },
+    { name: 'fadeInDown', vendor: 'animate.css' },
+    { name: 'bounceInUp', vendor: 'animate.css' },
+    { name: 'bounceIn', vendor: 'animate.css' }
+  ])
+  .start()
+```
+
+3. **Mixing animate.css and Built-in Movinblocks Animations**
+Combine Movinblocks animations and animate.css animations for different elements:
+```typescript
+new Movinblocks()
+  .setTimeline(['header', 'main', 'section', 'footer'])
+  .setAnimation([
+    // Movinblocks' built-in "fadeIn" animation.
+    'fadeIn',
+
+    // Custom animate.css animations.
+    { name: 'fadeInDown', vendor: 'animate.css' },
+    { name: 'bounceInUp', vendor: 'animate.css' },
+    { name: 'bounceIn', vendor: 'animate.css' }
+  ])
   .start()
 ```
 

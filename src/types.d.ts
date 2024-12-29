@@ -10,6 +10,23 @@ export type MbEvent = {
   [key in MbEventName]?: MbEventCallback[]
 }
 
+export type MbVendor = 'animate.css'
+
+export type MbVendorAnimation = {
+  name: string
+  vendor: MbVendor
+}
+
+export type MbVendorSchemaObj = {
+  defaultCssClasses: string[]
+  varPrefix: string
+  cssClassPrefix: string
+}
+
+export interface MbVendorSchema {
+  [key in MbVendor]: MbVendorSchemaObj
+}
+
 export interface MbIntersectionOptions {
   root?: Element | null
   rootMargin?: string
@@ -18,7 +35,7 @@ export interface MbIntersectionOptions {
 
 export interface MbOptions {
   timeline?: string[]
-  animation?: MbAnimation | MbAnimation[]
+  animation?: MbAnimation | MbAnimation[] | MbVendorAnimation | MbVendorAnimation[]
   timingFunction?: MbTimingFunction | MbTimingFunction[]
   duration?: number | number[]
   overlap?: number | number[]
@@ -29,7 +46,7 @@ export interface MbOptions {
 export interface MbPayload {
   el: HTMLElement
   id: string
-  animation: MbAnimation
+  animation: MbAnimation | MbVendorAnimation
   timingFunction: MbTimingFunction
   duration: number
   overlap?: number

@@ -8,8 +8,14 @@ class Utils {
   static isString(input) {
     return typeof input === "string";
   }
+  static isObject(input) {
+    return typeof input === "object" && input !== null && Object.getPrototypeOf(input) === Object.prototype;
+  }
   static isArray(arr) {
     return Array.isArray(arr);
+  }
+  static isEmptyObject(input) {
+    return this.isObject(input) && Object.keys(input).length === 0;
   }
   static isEmptyArray(arr) {
     return Array.isArray(arr) && arr.length === 0;
@@ -17,11 +23,17 @@ class Utils {
   static isEmptySet(set) {
     return set.size === 0;
   }
+  static findInSet(set, id) {
+    for (const item of set) {
+      if (item.id === id) return item;
+    }
+    return null;
+  }
   static setCssVar(el, varName, varValue) {
-    el.style.setProperty(varName, String(varValue));
+    el.style.setProperty(`--${varName}`, String(varValue));
   }
   static removeCssVar(el, varName) {
-    el.style.removeProperty(varName);
+    el.style.removeProperty(`--${varName}`);
   }
 }
 class Movinblocks {
@@ -34,9 +46,18 @@ class Movinblocks {
     __publicField(this, "_overlap", 0);
     __publicField(this, "_options", {});
     __publicField(this, "_events", {});
-    __publicField(this, "_cssVarPrefix", "--mb-");
     __publicField(this, "_cssBaseClass", "mb");
-    __publicField(this, "_cssVisibleClass", "mb-visible");
+    __publicField(this, "_cssVarPrefix", "");
+    __publicField(this, "_cssVendors", {
+      "animate.css": {
+        varPrefix: "animate-",
+        cssClassPrefix: "animate__",
+        defaultCssClasses: ["animate__animated", "animate__delay-1s"]
+      }
+    });
+  }
+  _isVendorAnimation(animation) {
+    return Boolean(Utils.isObject(animation) && animation.vendor);
   }
   _validateTimeline() {
     if (!this._options.timeline) {
@@ -77,6 +98,22 @@ class Movinblocks {
   _handleAnimationIteration() {
     this._emit("animationIteration");
   }
+  _setCssVarPrefix(item) {
+    if (this._isVendorAnimation(item.animation)) {
+      const vendorAnimation = item.animation;
+      this._cssVarPrefix = this._cssVendors[vendorAnimation.vendor].varPrefix;
+    } else {
+      this._cssVarPrefix = `${this._cssBaseClass}-`;
+    }
+  }
+  _setVendorCssClasses(el, animation, action) {
+    const vendor = this._cssVendors[animation.vendor];
+    if (action === "add") {
+      el.classList.add(...vendor.defaultCssClasses, `${vendor.cssClassPrefix}${animation.name}`);
+      return;
+    }
+    el.classList.remove(...vendor.defaultCssClasses, `${vendor.cssClassPrefix}${animation.name}`);
+  }
   _setPayload() {
     if (this._options.timeline) {
       let index = 0;
@@ -107,7 +144,7 @@ class Movinblocks {
     return this._duration;
   }
   _setAnimation(index) {
-    if (Utils.isString(this._options.animation)) {
+    if (Utils.isString(this._options.animation) || Utils.isObject(this._options.animation)) {
       return this._options.animation;
     }
     if (Utils.isArray(this._options.animation)) {
@@ -142,24 +179,35 @@ class Movinblocks {
     let currDelay = 0;
     let prevDuration = 0;
     for (const item of this._payload) {
-      item.el.classList.add(this._cssBaseClass);
-      item.el.classList.add(item.animation);
       if (prevDuration && item.overlap) {
         currDelay += prevDuration - item.overlap;
       }
+      this._setCssVarPrefix(item);
       Utils.setCssVar(item.el, `${this._cssVarPrefix}duration`, `${item.duration}ms`);
       Utils.setCssVar(item.el, `${this._cssVarPrefix}timing-function`, item.timingFunction);
       if (this._options.viewportTrigger) {
         this._addObserver(item.el);
       } else {
         Utils.setCssVar(item.el, `${this._cssVarPrefix}delay`, `${currDelay}ms`);
-        item.el.classList.add(this._cssVisibleClass);
+        this._setVisibility(item.el);
       }
       item.el.addEventListener("animationstart", () => this._handleAnimationStart());
       item.el.addEventListener("animationend", () => this._handleAnimationEnd(item.id));
       item.el.addEventListener("animationiteration", () => this._handleAnimationIteration());
       prevDuration = item.duration;
     }
+  }
+  _setVisibility(el, action = "add") {
+    const animation = Utils.findInSet(this._payload, el.id).animation;
+    if (this._isVendorAnimation(animation)) {
+      this._setVendorCssClasses(el, animation, action);
+      return;
+    }
+    if (action === "add") {
+      el.classList.add(this._cssBaseClass, animation);
+      return;
+    }
+    el.classList.remove(this._cssBaseClass, animation);
   }
   _addObserver(el) {
     const observer = new IntersectionObserver((entries) => {
@@ -168,7 +216,7 @@ class Movinblocks {
         if (index !== -1) {
           const el2 = entry.target;
           if (entry.isIntersecting) {
-            el2.classList.add(this._cssVisibleClass);
+            this._setVisibility(el2);
             this._emit("intersect");
             observer.disconnect();
           }
@@ -240,8 +288,8 @@ class Movinblocks {
   destroy() {
     for (const item of this._payload) {
       item.el.classList.remove(this._cssBaseClass);
-      item.el.classList.remove(this._cssVisibleClass);
-      item.el.classList.remove(item.animation);
+      this._setVisibility(item.el, "remove");
+      this._setCssVarPrefix(item);
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}duration`);
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}delay`);
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}timing-function`);
@@ -257,6 +305,8 @@ class Movinblocks {
     this._overlap = 0;
     this._options = {};
     this._events = {};
+    this._cssBaseClass = "mb";
+    this._cssVarPrefix = "";
     this._emit("destroy");
   }
 }
