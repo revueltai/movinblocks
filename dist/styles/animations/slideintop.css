@@ -1,1 +1,1 @@
-@keyframes slideInTop{0%{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:translateY(0)}}.mb.slideInTop{animation-name:slideInTop}
+@keyframes slideInTop{0%{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:translateY(0)}}.mb.mb-visible.slideInTop{animation-name:slideInTop}

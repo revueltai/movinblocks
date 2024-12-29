@@ -1,1 +1,1 @@
-@keyframes revealInBottom{0%{opacity:0;transform:translateY(100%)}to{clip-path:inset(0 0 0 0);opacity:1;transform:translateY(0)}}.mb.revealInBottom{animation-name:revealInBottom}
+@keyframes revealInBottom{0%{opacity:0;transform:translateY(100%)}to{clip-path:inset(0 0 0 0);opacity:1;transform:translateY(0)}}.mb.mb-visible.revealInBottom{animation-name:revealInBottom}

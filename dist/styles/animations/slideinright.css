@@ -1,1 +1,1 @@
-@keyframes slideInRight{0%{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}.mb.slideInRight{animation-name:slideInRight}
+@keyframes slideInRight{0%{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}.mb.mb-visible.slideInRight{animation-name:slideInRight}
