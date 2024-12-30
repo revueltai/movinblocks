@@ -2,7 +2,7 @@ export type MbAnimation = 'fadeIn' | 'slideInTop' | 'slideInBottom' | 'slideInLe
 
 export type MbTimingFunction = 'ease' | 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | `cubic-bezier(${number}, ${number}, ${number}, ${number})`
 
-export type MbEventName = 'start' | 'end' | 'destroy' | 'intersect' | 'animationStart' | 'animationEnd' | 'animationIteration'
+export type MbEventName = 'prepare' | 'start' | 'end' | 'destroy' | 'intersect' | 'animationStart' | 'animationEnd' | 'animationIteration'
 
 export type MbEventCallback = (data: any) => void
 
@@ -54,6 +54,7 @@ export interface MbPayload {
 
 declare class Movinblocks {
   private _started: boolean
+  private _prepared: boolean
   private _payload: Set<MbPayload>
   private _animation: MbAnimation
   private _timingFunction: MbTimingFunction
@@ -61,40 +62,47 @@ declare class Movinblocks {
   private _overlap: number
   private _options: MbOptions
   private _events: MbEvent
-  private _cssPrefix: string
-
-  constructor() {
-    this._started = false
-    this._payload = new Set()
-    this._animation = 'fadeIn'
-    this._timingFunction = 'ease-in-out'
-    this._duration = 1000
-    this._overlap = 0
-    this._options = {}
-    this._events = {} as MbEvent
-    this._cssPrefix = '--mb-'
+  private _cssBaseClass: string
+  private _cssVarPrefix: string
+  private _cssVendors: {
+    'animate.css': {
+      varPrefix: string
+      cssClassPrefix: string
+      defaultCssClasses: string[]
+    }
   }
 
+  private _isVendorAnimation(animation: MbAnimation | MbVendorAnimation): boolean
   private _validateTimeline(): boolean
-  private _handleAnimationStart(): void
-  private _handleAnimationEnd(id: string): void
-  private _handleAnimationIteration(): void
+  private _validateArrayProp(prop: string): boolean
+  private _handleAnimationStart(item: MbPayload): void
+  private _handleAnimationEnd(item: MbPayload): void
+  private _handleAnimationIteration(item: MbPayload): void
+  private _setCssVarPrefix(item: MbPayload): void
+  private _setVendorCssClasses(
+    el: HTMLElement,
+    animation: MbVendorAnimation,
+    action: 'add' | 'remove'
+  ): void
   private _setPayload(): void
   private _setDuration(index: number): number
-  private _setAnimation(index: number): MbAnimation
+  private _setAnimation(index: number): MbAnimation | MbVendorAnimation
   private _setTimingFunction(index: number): MbTimingFunction
   private _setOverlap(index: number): number
   private _setTimeline(): void
-  private _triggerStart(): void
-  private _emit(eventName: MbEventName): this
+  private _setVisibility(el: HTMLElement, action?: 'add' | 'remove'): void
+  private _addObserver(el: HTMLElement): void
+  private _emit(eventName: MbEventName, data?: any): this
 
   on(eventName: MbEventName, callback: MbEventCallback): this
   setDuration(duration: number | number[]): this
   setOverlap(overlap: number | number[]): this
+  setViewportTrigger(intersectionOptions?: MbIntersectionOptions | null): this
   setAnimation(animation: MbAnimation | MbAnimation[]): this
   setTimingFunction(timingFunction: MbTimingFunction | MbTimingFunction[]): this
   setTimeline(timeline: string[]): this
   getElements(): Set<MbPayload>
+  prepare(): this
   start(): this
   destroy(): void
 }

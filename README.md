@@ -34,6 +34,7 @@ import 'movinblocks/styles';
 
 const mbInstance = new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
+  .prepare()
   .start();
 ```
 
@@ -74,6 +75,7 @@ import 'movinblocks/styles/revealInTop';
   (function () {
     const mbInstance = new Movinblocks()
       .setTimeline(['header', 'main', 'section', 'footer'])
+      .prepare()
       .start();
   })();
 </script>
@@ -91,7 +93,8 @@ Movinblocks comes with a minimal API:
 | `setOverlap()`  | Sets the overlap time (in milliseconds) between consecutive animations (See [setOverlap()](#setOverlap)). |
 | `setViewportTrigger()` | Starts the animations when the elements intersects the viewport (See [setViewportTrigger()](#setViewportTrigger)). |
 | `on()`          | Registers a callback for a specific event (e.g., `start`) during the animation (See [on()](#on)). |
-| `start()`       | Initiates the animation sequence based on the configured timeline and settings (See [start()](#start)). |
+| `prepare()`       | Sets up the timeline, elements, and settings required for the animation sequence, ensuring everything is ready to run (See [prepare()](#prepare)). |
+| `start()`       | Triggers the animation sequence using the timeline and settings that were previously prepared (See [start()](#start)). |
 | `destroy()`       | Destroy the Movinblocks instance (See [destroy()](#destroy)). |
 
 ### setTimeline
@@ -103,7 +106,8 @@ Use `setTimeline()` to set the sequence and order of appearence of the HTML **el
 ```typescript
 new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer']) // header appears first, main second, section third, etc.
-  .start()
+  .prepare()
+  .start();
 ```
 
 ### setAnimation
@@ -120,6 +124,7 @@ If you want each element to have its own animation, declare it as an
 new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setAnimation(['fadeIn', 'slideInTop', 'slideInBottom', 'slideInLeft']) // different animations for each element.
+  .prepare()
   .start();
 ```
 
@@ -232,6 +237,7 @@ Use `setTimingFunction()` to choose the timing function (or functions) for your 
 new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setTimingFunction(['ease-in', 'linear', 'ease-in-out', 'ease-out']) // different timing functions for each element.
+  .prepare()
   .start();
 ```
 
@@ -257,6 +263,7 @@ If you want each element to have its own duration, declare it as an *array of nu
 new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setDuration([1000, 500, 1200, 600]) // different durations for each element.
+  .prepare()
   .start();
 ```
 
@@ -266,6 +273,7 @@ If you want all elements to have the same animation, declare it as a *number*:
 new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setDuration(420) // all elements use the same duration.
+  .prepare()
   .start();
 ```
 
@@ -285,6 +293,7 @@ new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setDuration(1000)
   .setOverlap([400, 300, 500]) // different overlap times for each element.
+  .prepare()
   .start();
 ```
 Note:
@@ -292,16 +301,16 @@ Note:
 
 So, the `setOverlap([400, 300, 500])` array defines the overlap times for the elements **except for the first one (header)**:
 ```markdown
-1. **0ms** for the `header` element id (first element in the timeline):
+1. 0ms for the `header` element id (first element in the timeline):
   it will start without any overlap.
 
-2. **400ms** for the `main` element id:
+2. 400ms for the `main` element id:
   it will start 400ms before `header` finishes.
 
-3. **300ms** for the `section` element id:
+3. 300ms for the `section` element id:
   it will start 300ms before `main` finishes.
 
-4. **500ms** for the `footer` element id:
+4. 500ms for the `footer` element id:
   it will start 500ms before `section` finishes.
 ```
 
@@ -311,6 +320,7 @@ new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setDuration(1000)
   .setOverlap(350) // all elements have the same overlap time.
+  .prepare()
   .start();
 ```
 
@@ -326,6 +336,7 @@ new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setDuration(1000)
   .setViewportTrigger() // each elements will start animating once inside the viewport.
+  .prepare()
   .start();
 ```
 
@@ -335,10 +346,11 @@ new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setDuration(1000)
   .setViewportTrigger({
-      root: document.querySelector("#myElement"),
-      rootMargin: "100px",
-      threshold: 1.0,
-    })
+    root: document.querySelector("#myElement"),
+    rootMargin: "100px",
+    threshold: 1.0,
+  })
+  .prepare()
   .start();
 ```
 
@@ -351,6 +363,7 @@ new Movinblocks()
   .setDuration(1000)
   .setOverlap(400) // ❌ It won't take effect because setViewportTrigger() is defined.
   .setViewportTrigger()
+  .prepare()
   .start();
 ```
 
@@ -374,6 +387,7 @@ new Movinblocks()
   .setDuration(1000)
   .on('start', (data) => console.log('Movinblocks started!', data))
   .on('end', (data) => console.log('Movinblocks ended!', data))
+  .prepare()
   .start();
 ```
 
@@ -394,6 +408,32 @@ When using the `on()` method, the callback function receives an event data objec
 
 This data lets you dynamically access and manipulate elements during the animation process.
 
+### prepare
+The `prepare()` method sets up all necessary configurations for the animation sequence, such as the timeline, elements, and duration. This step ensures that everything is ready before calling `start()`.
+It's useful when you want to separate the initialization phase from execution.
+
+```typescript
+const mbInstance = new Movinblocks()
+  .setTimeline(['header', 'main', 'section', 'footer'])
+  .setAnimation('fadeIn')
+  .setDuration(500)
+  .prepare();
+```
+
+You can use `prepare()` to perform setup tasks early and then call start() at the desired moment:
+```typescript
+const mbInstance = new Movinblocks()
+  .setTimeline(['header', 'main', 'section', 'footer'])
+  .setAnimation('fadeIn')
+  .setDuration(500)
+  .prepare();
+
+// Start the animation later
+document.getElementById('myButton')?.addEventListener('click', () => mbInstance.start());
+```
+
+This separation makes your code more modular and easier to manage in interactive scenarios.
+
 ### start
 The `start()` method initiates the animation sequence configured for Movinblocks.
 
@@ -402,6 +442,7 @@ You can call `start()` as the last method in the instance chain for a straightfo
 ```typescript
 new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
+  .prepare()
   .start();
 ```
 
@@ -410,10 +451,13 @@ Alternatively, you can detach it from the instance declaration and invoke it lat
 const mbInstance = new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer']);
   .setDuration(420);
+  .prepare()
 
 setTimeout(() => console.log('Just killing time'), 2000);
 mbInstance.start();
 ```
+
+Note: Make sure to have called `prepare()` before calling `start()`.
 
 ### destroy
 The `destroy()` method destroys a Movinblocks instance (including events, classes, and other resources).
@@ -421,6 +465,7 @@ The `destroy()` method destroys a Movinblocks instance (including events, classe
 ```typescript
 const mbInstance = new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer']);
+  .prepare()
   .start();
 
 setTimeout(() => mbInstance.destroy(), 2000) // Triggers the destroy after 2 seconds.
