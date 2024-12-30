@@ -72,23 +72,23 @@ class Movinblocks {
     return true
   }
 
-  _handleAnimationStart() {
-    this._emit('animationStart')
+  _handleAnimationStart(item: MbPayload) {
+    this._emit('animationStart', { currentElement: item })
   }
 
-  _handleAnimationEnd(id: string) {
-    this._emit('animationEnd')
+  _handleAnimationEnd(item: MbPayload) {
+    this._emit('animationEnd', { currentElement: item })
 
     if (
       this._options.timeline &&
-      this._options.timeline[this._options.timeline.length - 1] === id
+      this._options.timeline[this._options.timeline.length - 1] === item.id
     ) {
       this._emit('end')
     }
   }
 
-  _handleAnimationIteration() {
-    this._emit('animationIteration')
+  _handleAnimationIteration(item: MbPayload) {
+    this._emit('animationIteration', { currentElement: item })
   }
 
   _setCssVarPrefix(item: MbPayload) {
@@ -199,14 +199,14 @@ class Movinblocks {
     let prevDuration = 0
 
     for (const item of this._payload) {
-      if (prevDuration && item.overlap) {
-        currDelay += (prevDuration - item.overlap)
-      }
-
       this._setCssVarPrefix(item)
 
       Utils.setCssVar(item.el, `${this._cssVarPrefix}duration`, `${item.duration}ms`)
       Utils.setCssVar(item.el, `${this._cssVarPrefix}timing-function`, item.timingFunction)
+
+      if (prevDuration) {
+        currDelay += prevDuration - item.overlap!
+      }
 
       if (this._options.viewportTrigger) {
         this._addObserver(item.el)
@@ -215,9 +215,9 @@ class Movinblocks {
         this._setVisibility(item.el)
       }
 
-      item.el.addEventListener('animationstart', () => this._handleAnimationStart())
-      item.el.addEventListener('animationend', () => this._handleAnimationEnd(item.id))
-      item.el.addEventListener('animationiteration', () => this._handleAnimationIteration())
+      item.el.addEventListener('animationstart', () => this._handleAnimationStart(item))
+      item.el.addEventListener('animationend', () => this._handleAnimationEnd(item))
+      item.el.addEventListener('animationiteration', () => this._handleAnimationIteration(item))
 
       prevDuration = item.duration
     }
@@ -268,9 +268,12 @@ class Movinblocks {
     }
   }
 
-  _emit(eventName: MbEventName) {
+  _emit(eventName: MbEventName, data: any = null) {
     if (this._events[eventName]) {
-      this._events[eventName].forEach((cb: MbEventCallback) => cb(this._payload))
+      this._events[eventName].forEach((cb: MbEventCallback) => cb({
+        elements: this._payload,
+        ...data
+      }))
     }
 
     return this
@@ -344,9 +347,9 @@ class Movinblocks {
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}delay`)
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}timing-function`)
 
-      item.el.removeEventListener('animationstart', () => this._handleAnimationStart())
-      item.el.removeEventListener('animationend', () => this._handleAnimationEnd(item.id))
-      item.el.removeEventListener('animationiteration', () => this._handleAnimationIteration())
+      item.el.removeEventListener('animationstart', () => this._handleAnimationStart(item))
+      item.el.removeEventListener('animationend', () => this._handleAnimationEnd(item))
+      item.el.removeEventListener('animationiteration', () => this._handleAnimationIteration(item))
     }
 
     this._started = false
