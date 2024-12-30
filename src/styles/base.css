@@ -4,4 +4,9 @@
   animation-timing-function: var(--mb-timing-function);
   animation-fill-mode: both;
   animation-name: none;
+  animation-play-state: paused;
+}
+
+.mb-running {
+  animation-play-state: running;
 }

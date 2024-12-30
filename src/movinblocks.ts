@@ -15,6 +15,7 @@ import {
 
 class Movinblocks {
   private _started: boolean = false
+  private _prepared: boolean = false
   private _payload: Set<MbPayload> = new Set()
   private _animation: MbAnimation = 'fadeIn'
   private _timingFunction: MbTimingFunction = 'ease-in-out'
@@ -259,15 +260,6 @@ class Movinblocks {
     observer.observe(el)
   }
 
-  _triggerStart() {
-    if (this._validateTimeline()) {
-      this._setPayload()
-      this._setTimeline()
-      this._started = true
-      this._emit('start')
-    }
-  }
-
   _emit(eventName: MbEventName, data: any = null) {
     if (this._events[eventName]) {
       this._events[eventName].forEach((cb: MbEventCallback) => cb({
@@ -329,9 +321,31 @@ class Movinblocks {
     return this._payload
   }
 
+  prepare() {
+    if (!this._started && this._validateTimeline()) {
+      this._setPayload()
+      this._setTimeline()
+      this._prepared = true
+      this._emit('prepare')
+    }
+
+    return this
+  }
+
   start() {
+    if (!this._prepared) {
+      throw new Error('Please call prepare() before start().')
+    }
+
     if (!this._started) {
-      this._triggerStart()
+      if (this._validateTimeline()) {
+        for (const item of this._payload) {
+          item.el.classList.add(this._cssBaseClass + '-running')
+        }
+
+        this._started = true
+        this._emit('start')
+      }
     }
 
     return this
