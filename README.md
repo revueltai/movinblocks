@@ -377,6 +377,23 @@ new Movinblocks()
   .start();
 ```
 
+#### Event Callback Data
+When using the `on()` method, the callback function receives an event data object containing the following properties:
+
+| Property          | Type                 | Description                                                        |
+|--|--|--|
+| `elements`        | `Set<MbPayload>`    | A set containing all elements managed by the current Movinblocks instance. |
+| `currentElement`  | `MbPayload`         | The specific element affected by the current event.                |
+
+```js
+{
+  elements: Set<MbPayload>, // All elements in the Movinblocks instance.
+  currentElement: MbPayload // The element affected by this event.
+}
+```
+
+This data lets you dynamically access and manipulate elements during the animation process.
+
 ### start
 The `start()` method initiates the animation sequence configured for Movinblocks.
 
