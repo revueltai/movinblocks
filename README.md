@@ -4,7 +4,7 @@
 Movinblocks is a lightweight plugin for animating HTML elements sequentially.
 
 ## Playground
-Explore Movinblocks's capabilities in the [Playground]().
+Explore Movinblocks's capabilities in the [Playground](https://movinblocks-web.vercel.app/).
 
 ---
 
