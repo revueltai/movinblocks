@@ -480,3 +480,11 @@ const mbInstance = new Movinblocks()
 
 setTimeout(() => mbInstance.destroy(), 2000) // Triggers the destroy after 2 seconds.
 ```
+
+---
+
+#### Like Movinblocks, but you want to animate texts instead? 
+## [Try Movinwords!](https://github.com/revueltai/movinwords)
+It's another lightweight plugin I created, designed for animating sentences, words, and letters in various creative ways. 
+
+[Give it a go!](https://github.com/revueltai/movinwords)
