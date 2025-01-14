@@ -1,4 +1,4 @@
-![Movinwblocks Logo](https://a.storyblok.com/f/99692/1280x640/09cb8a5371/movinblocks-logo.jpg)
+![Movinwblocks Logo](https://a.storyblok.com/f/99692/600x315/0e60a87860/movinblocks-ogimage.jpg)
 
 # Movinblocks
 Movinblocks is a lightweight plugin for animating HTML elements sequentially.
