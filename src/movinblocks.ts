@@ -24,6 +24,7 @@ class Movinblocks {
   private _options: MbOptions = {}
   private _events: MbEvent = {} as MbEvent
   private _cssBaseClass = 'mb'
+  private _cssRunningClass = '-running'
   private _cssVarPrefix = ''
   private _cssVendors = {
     'animate.css': {
@@ -210,7 +211,7 @@ class Movinblocks {
       }
 
       if (this._options.viewportTrigger) {
-        this._addObserver(item.el)
+        this._addObserver(item)
       } else {
         Utils.setCssVar(item.el, `${this._cssVarPrefix}delay`, `${currDelay}ms`)
         this._setVisibility(item.el)
@@ -240,7 +241,7 @@ class Movinblocks {
     el.classList.remove(this._cssBaseClass, animation)
   }
 
-  _addObserver(el: HTMLElement) {
+  _addObserver(item: MbPayload) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         const index = this._options.timeline!.indexOf(entry.target.id)
@@ -250,14 +251,14 @@ class Movinblocks {
 
           if (entry.isIntersecting) {
             this._setVisibility(el)
-            this._emit('intersect')
+            this._emit('intersect', { currentElement: item })
             observer.disconnect()
           }
         }
       })
     }, this._options.intersectionOptions!)
 
-    observer.observe(el)
+    observer.observe(item.el)
   }
 
   _emit(eventName: MbEventName, data: any = null) {
@@ -340,7 +341,7 @@ class Movinblocks {
     if (!this._started) {
       if (this._validateTimeline()) {
         for (const item of this._payload) {
-          item.el.classList.add(this._cssBaseClass + '-running')
+          item.el.classList.add(this._cssBaseClass + this._cssRunningClass)
         }
 
         this._started = true
@@ -354,6 +355,7 @@ class Movinblocks {
   destroy() {
     for (const item of this._payload) {
       item.el.classList.remove(this._cssBaseClass)
+      item.el.classList.remove(this._cssBaseClass + this._cssRunningClass)
       this._setVisibility(item.el, 'remove')
       this._setCssVarPrefix(item)
 
