@@ -3,8 +3,18 @@
 # Movinblocks
 Movinblocks is a lightweight plugin for animating HTML elements sequentially.
 
-## Playground
-Explore Movinblocks's capabilities in the [Playground](https://movinblocks-web.vercel.app/).
+## Playgrounds
+Explore Movinblocks's capabilities in the [Playground](https://movinblocks.vercel.app/).
+
+Movinblocks is also available for your favorite Frameworks!
+
+[![Vue](https://a.storyblok.com/f/99692/80x80/38a9ffe002/vue.png)](https://stackblitz.com/edit/movinblocks-vue)
+[![React](https://a.storyblok.com/f/99692/80x80/2162faf2ae/react.png)](https://stackblitz.com/edit/movinblocks-react)
+[![Nuxt](https://a.storyblok.com/f/99692/80x80/1ee8d02e68/nuxt.png)](https://stackblitz.com/edit/movinblocks-nuxt)
+[![Next](https://a.storyblok.com/f/99692/80x80/3d5e4cb32d/next.png)](https://stackblitz.com/edit/movinblocks-next)
+[![Svelte](https://a.storyblok.com/f/99692/80x80/316e3ea903/svelte.png)](https://stackblitz.com/edit/movinblocks-svelte)
+[![Angular](https://a.storyblok.com/f/99692/80x80/2a2726dabb/angular.png)](https://stackblitz.com/edit/movinblocks-angular)
+
 
 ---
 
