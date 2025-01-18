@@ -4,7 +4,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Movinblocks from '../src/movinblocks'
-import { MbAnimation } from '../src/types'
+import { MbAnimation, MbTimingFunction } from '../src/types'
 
 describe('Movinblocks', () => {
   let movinblocks: Movinblocks
@@ -129,6 +129,43 @@ describe('Movinblocks', () => {
       const animations: MbAnimation[] = ['fadeIn', 'slideInTop', 'slideInBottom']
       movinblocks.setAnimation(animations)
 
+      expect(() => movinblocks.prepare()).toThrow()
+    })
+  })
+
+  describe('Timing', () => {
+    it('should set the timingFunction for all timeline elements if a timingFunction string is provided.', () => {
+      const timingFunction = 'ease-in'
+
+      movinblocks
+        .setTimingFunction(timingFunction)
+        .prepare()
+        .start()
+
+      const el1 = document.getElementById('el1')
+      const el2 = document.getElementById('el2')
+
+      expect(movinblocks['_options'].timingFunction).toBe(timingFunction)
+      expect(el1?.style.getPropertyValue('--mb-timing-function')).toBe(timingFunction)
+      expect(el2?.style.getPropertyValue('--mb-timing-function')).toBe(timingFunction)
+    })
+
+    it('should set the timingFunction for each timeline element if an array of valid timingFunction names is provided.', () => {
+      const timingFunctions: MbTimingFunction[] = ['ease-in', 'linear']
+      movinblocks.setTimingFunction(timingFunctions)
+        .prepare()
+        .start()
+
+      const el1 = document.getElementById('el1')
+      const el2 = document.getElementById('el2')
+
+      expect(movinblocks['_options'].timingFunction).toEqual(timingFunctions)
+      expect(el1?.style.getPropertyValue('--mb-timing-function')).toBe(timingFunctions[0])
+      expect(el2?.style.getPropertyValue('--mb-timing-function')).toBe(timingFunctions[1])
+    })
+
+    it('should throw if the timingFunction array length does not match the timeline length.', () => {
+      movinblocks.setTimingFunction(['linear'])
       expect(() => movinblocks.prepare()).toThrow()
     })
   })
