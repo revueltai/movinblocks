@@ -319,10 +319,6 @@ class Movinblocks {
     return this
   }
 
-  getElements() {
-    return this._payload
-  }
-
   prepare() {
     if (!this._started && this._validateTimeline()) {
       this._setPayload()
