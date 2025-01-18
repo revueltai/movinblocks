@@ -1,17 +1,18 @@
-import Utils from './utils'
 import {
   MbAnimation,
-  MbTimingFunction,
+  MbCustomAnimation,
   MbEvent,
+  MbEventCallback,
   MbEventName,
+  MbIntersectionOptions,
   MbOptions,
   MbPayload,
-  MbEventCallback,
-  MbIntersectionOptions,
+  MbTimingFunction,
   MbVendorAnimation,
   MbVendorSchema,
   MbVendorSchemaObj
 } from './types'
+import Utils from './utils'
 
 class Movinblocks {
   private _started: boolean = false
@@ -303,7 +304,7 @@ class Movinblocks {
     return this
   }
 
-  setAnimation(animation: MbAnimation | MbAnimation[]) {
+  setAnimation(animation: MbAnimation | MbAnimation[] | MbCustomAnimation | MbCustomAnimation[] | MbVendorAnimation | MbVendorAnimation[]) {
     this._options.animation = animation
     return this
   }

@@ -1,4 +1,6 @@
-export type MbAnimation = 'fadeIn' | 'slideInTop' | 'slideInBottom' | 'slideInLeft' | 'slideInRight' | 'revealInTop' | 'revealInBottom' | string & { __custom: true }
+export type MbAnimation = 'fadeIn' | 'slideInTop' | 'slideInBottom' | 'slideInLeft' | 'slideInRight' | 'revealInTop' | 'revealInBottom' | MbVendorAnimation | MbCustomAnimation
+
+export type MbCustomAnimation = string & { __custom: true }
 
 export type MbTimingFunction = 'ease' | 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | `cubic-bezier(${number}, ${number}, ${number}, ${number})`
 

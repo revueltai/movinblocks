@@ -4,7 +4,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Movinblocks from '../src/movinblocks'
-import { MbAnimation, MbTimingFunction } from '../src/types'
+import { MbAnimation, MbCustomAnimation, MbTimingFunction, MbVendorAnimation } from '../src/types'
 
 describe('Movinblocks', () => {
   let movinblocks: Movinblocks
@@ -130,6 +130,128 @@ describe('Movinblocks', () => {
       movinblocks.setAnimation(animations)
 
       expect(() => movinblocks.prepare()).toThrow()
+    })
+
+    describe('Vendor Animations', () => {
+      it('should set a vendor animation (animate.css) for all timeline elements if a vendor animation object is provided.', () => {
+        const vendorAnimation: MbVendorAnimation = {
+          name: 'bounceIn',
+          vendor: 'animate.css'
+        }
+
+        movinblocks
+          .setAnimation(vendorAnimation)
+          .prepare()
+          .start()
+
+        const el1 = document.getElementById('el1')
+        const el2 = document.getElementById('el2')
+
+        expect(movinblocks['_options'].animation).toEqual(vendorAnimation)
+        expect(el1?.classList.contains('animate__bounceIn')).toBe(true)
+        expect(el1?.classList.contains('animate__animated')).toBe(true)
+        expect(el2?.classList.contains('animate__bounceIn')).toBe(true)
+        expect(el2?.classList.contains('animate__animated')).toBe(true)
+      })
+
+      it('should set different vendor animations (animate.css) for each timeline element if an array of vendor animation objects is provided.', () => {
+        const vendorAnimations: MbVendorAnimation[] = [
+          { name: 'bounceIn', vendor: 'animate.css' },
+          { name: 'fadeIn', vendor: 'animate.css' }
+        ]
+
+        movinblocks
+          .setAnimation(vendorAnimations)
+          .prepare()
+          .start()
+
+        const el1 = document.getElementById('el1')
+        const el2 = document.getElementById('el2')
+
+        expect(movinblocks['_options'].animation).toEqual(vendorAnimations)
+        expect(el1?.classList.contains('animate__bounceIn')).toBe(true)
+        expect(el1?.classList.contains('animate__animated')).toBe(true)
+        expect(el2?.classList.contains('animate__fadeIn')).toBe(true)
+        expect(el2?.classList.contains('animate__animated')).toBe(true)
+      })
+
+      it('should support mixing built-in and vendor animations.', () => {
+        const mixedAnimations: MbAnimation[] = [
+          'fadeIn',
+          { name: 'bounceIn', vendor: 'animate.css' }
+        ]
+
+        movinblocks
+          .setAnimation(mixedAnimations)
+          .prepare()
+          .start()
+
+        const el1 = document.getElementById('el1')
+        const el2 = document.getElementById('el2')
+
+        expect(movinblocks['_options'].animation).toEqual(mixedAnimations)
+        expect(el1?.classList.contains('fadeIn')).toBe(true)
+        expect(el2?.classList.contains('animate__bounceIn')).toBe(true)
+        expect(el2?.classList.contains('animate__animated')).toBe(true)
+      })
+    })
+
+    describe('Custom Animations', () => {
+      it('should set custom animation for all timeline elements if a custom animation string is provided', () => {
+        const customAnimation = 'myCustomAnimation'
+
+        movinblocks
+          .setAnimation(customAnimation as MbCustomAnimation)
+          .prepare()
+          .start()
+
+        const el1 = document.getElementById('el1')
+        const el2 = document.getElementById('el2')
+
+        expect(movinblocks['_options'].animation).toBe(customAnimation)
+        expect(el1?.classList.contains(customAnimation)).toBe(true)
+        expect(el2?.classList.contains(customAnimation)).toBe(true)
+      })
+
+      it('should set different custom animations for each timeline element if an array of custom animation strings is provided', () => {
+        const customAnimations = ['myCustomAnimation1', 'myCustomAnimation2']
+
+        movinblocks
+          .setAnimation(customAnimations as MbCustomAnimation[])
+          .prepare()
+          .start()
+
+        const el1 = document.getElementById('el1')
+        const el2 = document.getElementById('el2')
+
+        expect(movinblocks['_options'].animation).toEqual(customAnimations)
+        expect(el1?.classList.contains(customAnimations[0])).toBe(true)
+        expect(el2?.classList.contains(customAnimations[1])).toBe(true)
+      })
+
+      it('should support mixing built-in, vendor and custom animations', () => {
+        const mixedAnimations = [
+          'fadeIn',
+          { name: 'bounceIn', vendor: 'animate.css' },
+          'myCustomAnimation'
+        ]
+
+        movinblocks
+          .setTimeline(['el1', 'el2', 'el3'])
+          .setAnimation(mixedAnimations as MbAnimation[])
+          .prepare()
+          .start()
+
+        const el1 = document.getElementById('el1')
+        const el2 = document.getElementById('el2')
+        const el3 = document.getElementById('el3')
+
+        expect(movinblocks['_options'].animation).toEqual(mixedAnimations)
+        expect(el1?.classList.contains('fadeIn')).toBe(true)
+        expect(el2?.classList.contains('animate__bounceIn')).toBe(true)
+        expect(el2?.classList.contains('animate__animated')).toBe(true)
+        expect(el3?.classList.contains('myCustomAnimation')).toBe(true)
+      })
     })
   })
 

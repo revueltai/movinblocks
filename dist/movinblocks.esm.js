@@ -39,6 +39,7 @@ class Utils {
 class Movinblocks {
   constructor() {
     __publicField(this, "_started", false);
+    __publicField(this, "_prepared", false);
     __publicField(this, "_payload", /* @__PURE__ */ new Set());
     __publicField(this, "_animation", "fadeIn");
     __publicField(this, "_timingFunction", "ease-in-out");
@@ -47,6 +48,7 @@ class Movinblocks {
     __publicField(this, "_options", {});
     __publicField(this, "_events", {});
     __publicField(this, "_cssBaseClass", "mb");
+    __publicField(this, "_cssRunningClass", "-running");
     __publicField(this, "_cssVarPrefix", "");
     __publicField(this, "_cssVendors", {
       "animate.css": {
@@ -86,17 +88,17 @@ class Movinblocks {
     }
     return true;
   }
-  _handleAnimationStart() {
-    this._emit("animationStart");
+  _handleAnimationStart(item) {
+    this._emit("animationStart", { currentElement: item });
   }
-  _handleAnimationEnd(id) {
-    this._emit("animationEnd");
-    if (this._options.timeline && this._options.timeline[this._options.timeline.length - 1] === id) {
+  _handleAnimationEnd(item) {
+    this._emit("animationEnd", { currentElement: item });
+    if (this._options.timeline && this._options.timeline[this._options.timeline.length - 1] === item.id) {
       this._emit("end");
     }
   }
-  _handleAnimationIteration() {
-    this._emit("animationIteration");
+  _handleAnimationIteration(item) {
+    this._emit("animationIteration", { currentElement: item });
   }
   _setCssVarPrefix(item) {
     if (this._isVendorAnimation(item.animation)) {
@@ -179,21 +181,21 @@ class Movinblocks {
     let currDelay = 0;
     let prevDuration = 0;
     for (const item of this._payload) {
-      if (prevDuration && item.overlap) {
-        currDelay += prevDuration - item.overlap;
-      }
       this._setCssVarPrefix(item);
       Utils.setCssVar(item.el, `${this._cssVarPrefix}duration`, `${item.duration}ms`);
       Utils.setCssVar(item.el, `${this._cssVarPrefix}timing-function`, item.timingFunction);
+      if (prevDuration) {
+        currDelay += prevDuration - item.overlap;
+      }
       if (this._options.viewportTrigger) {
-        this._addObserver(item.el);
+        this._addObserver(item);
       } else {
         Utils.setCssVar(item.el, `${this._cssVarPrefix}delay`, `${currDelay}ms`);
         this._setVisibility(item.el);
       }
-      item.el.addEventListener("animationstart", () => this._handleAnimationStart());
-      item.el.addEventListener("animationend", () => this._handleAnimationEnd(item.id));
-      item.el.addEventListener("animationiteration", () => this._handleAnimationIteration());
+      item.el.addEventListener("animationstart", () => this._handleAnimationStart(item));
+      item.el.addEventListener("animationend", () => this._handleAnimationEnd(item));
+      item.el.addEventListener("animationiteration", () => this._handleAnimationIteration(item));
       prevDuration = item.duration;
     }
   }
@@ -209,33 +211,28 @@ class Movinblocks {
     }
     el.classList.remove(this._cssBaseClass, animation);
   }
-  _addObserver(el) {
+  _addObserver(item) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         const index = this._options.timeline.indexOf(entry.target.id);
         if (index !== -1) {
-          const el2 = entry.target;
+          const el = entry.target;
           if (entry.isIntersecting) {
-            this._setVisibility(el2);
-            this._emit("intersect");
+            this._setVisibility(el);
+            this._emit("intersect", { currentElement: item });
             observer.disconnect();
           }
         }
       });
     }, this._options.intersectionOptions);
-    observer.observe(el);
+    observer.observe(item.el);
   }
-  _triggerStart() {
-    if (this._validateTimeline()) {
-      this._setPayload();
-      this._setTimeline();
-      this._started = true;
-      this._emit("start");
-    }
-  }
-  _emit(eventName) {
+  _emit(eventName, data = null) {
     if (this._events[eventName]) {
-      this._events[eventName].forEach((cb) => cb(this._payload));
+      this._events[eventName].forEach((cb) => cb({
+        elements: this._payload,
+        ...data
+      }));
     }
     return this;
   }
@@ -279,23 +276,42 @@ class Movinblocks {
   getElements() {
     return this._payload;
   }
+  prepare() {
+    if (!this._started && this._validateTimeline()) {
+      this._setPayload();
+      this._setTimeline();
+      this._prepared = true;
+      this._emit("prepare");
+    }
+    return this;
+  }
   start() {
+    if (!this._prepared) {
+      throw new Error("Please call prepare() before start().");
+    }
     if (!this._started) {
-      this._triggerStart();
+      if (this._validateTimeline()) {
+        for (const item of this._payload) {
+          item.el.classList.add(this._cssBaseClass + this._cssRunningClass);
+        }
+        this._started = true;
+        this._emit("start");
+      }
     }
     return this;
   }
   destroy() {
     for (const item of this._payload) {
       item.el.classList.remove(this._cssBaseClass);
+      item.el.classList.remove(this._cssBaseClass + this._cssRunningClass);
       this._setVisibility(item.el, "remove");
       this._setCssVarPrefix(item);
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}duration`);
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}delay`);
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}timing-function`);
-      item.el.removeEventListener("animationstart", () => this._handleAnimationStart());
-      item.el.removeEventListener("animationend", () => this._handleAnimationEnd(item.id));
-      item.el.removeEventListener("animationiteration", () => this._handleAnimationIteration());
+      item.el.removeEventListener("animationstart", () => this._handleAnimationStart(item));
+      item.el.removeEventListener("animationend", () => this._handleAnimationEnd(item));
+      item.el.removeEventListener("animationiteration", () => this._handleAnimationIteration(item));
     }
     this._started = false;
     this._payload = /* @__PURE__ */ new Set();
