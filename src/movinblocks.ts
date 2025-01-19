@@ -372,6 +372,8 @@ class Movinblocks {
   }
 
   destroy() {
+    this._emit('destroy')
+
     for (const item of this._payload) {
       item.el.classList.remove(this._cssBaseClass)
       item.el.classList.remove(this._cssBaseClass + this._cssRunningClass)
@@ -395,11 +397,9 @@ class Movinblocks {
     this._duration = 1000
     this._overlap = 0
     this._options = {}
-    this._events = {}
     this._cssBaseClass = 'mb'
     this._cssVarPrefix = ''
-
-    this._emit('destroy')
+    this._events = {}
   }
 }
 
