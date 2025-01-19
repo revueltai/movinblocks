@@ -2,6 +2,7 @@
   animation-duration: var(--mb-duration);
   animation-delay: var(--mb-delay);
   animation-timing-function: var(--mb-timing-function);
+  animation-iteration-count: var(--mb-iteration-count);
   animation-fill-mode: both;
   animation-name: none;
   animation-play-state: paused;

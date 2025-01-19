@@ -15,7 +15,6 @@ Movinblocks is also available for your favorite Frameworks!
 [![Svelte](https://a.storyblok.com/f/99692/80x80/316e3ea903/svelte.png)](https://stackblitz.com/edit/movinblocks-svelte)
 [![Angular](https://a.storyblok.com/f/99692/80x80/2a2726dabb/angular.png)](https://stackblitz.com/edit/movinblocks-angular)
 
-
 ---
 
 ## Installation
@@ -100,6 +99,7 @@ Movinblocks comes with a minimal API:
 | `setAnimation()`| Specifies the animation style to be applied to the elements (e.g., `fadeIn`) (See [setAnimation()](#setAnimation)). |
 | `setDuration()` | Defines the duration (in milliseconds) for each animation in the sequence (See [setDuration()](#setDuration)). |
 | `setTimingFunction()` | Defines the css timing function for each animation in the sequence (See [setTimingFunction()](#setTimingFunction)). |
+| `setIterationCount()` | Defines the css iteration count for each animation in the sequence (See [setIterationCount()](#setIterationCount)). |
 | `setOverlap()`  | Sets the overlap time (in milliseconds) between consecutive animations (See [setOverlap()](#setOverlap)). |
 | `setViewportTrigger()` | Starts the animations when the elements intersects the viewport (See [setViewportTrigger()](#setViewportTrigger)). |
 | `on()`          | Registers a callback for a specific event (e.g., `start`) during the animation (See [on()](#on)). |
@@ -257,6 +257,30 @@ If you want all elements to have the same timing function, declare it as a *MbTi
 new Movinblocks()
   .setTimeline(['header', 'main', 'section', 'footer'])
   .setTimingFunction('linear') // all elements use the same timing function.
+  .start();
+```
+
+### setIterationCount
+```typescript
+setIterationCount(iterationCount: MbIterationCount | MbIterationCount[])
+```
+
+Use `setIterationCount()` to choose the iteration count value (_number | 'infinite'_) for your elements.
+
+```typescript
+new Movinblocks()
+  .setTimeline(['header', 'main', 'section', 'footer'])
+  .setIterationCount(['infinite', 1, 1, 3]) // different iteration count values for each element.
+  .prepare()
+  .start();
+```
+
+If you want all elements to have the same iteration count value, declare it as a single *MbIterationCount value*:
+
+```typescript
+new Movinblocks()
+  .setTimeline(['header', 'main', 'section', 'footer'])
+  .setIterationCount('infinite') // all elements use 'infinite' as their iteration count value.
   .start();
 ```
 
@@ -483,8 +507,8 @@ setTimeout(() => mbInstance.destroy(), 2000) // Triggers the destroy after 2 sec
 
 ---
 
-#### Like Movinblocks, but you want to animate texts instead? 
+#### Like Movinblocks, but you want to animate texts instead?
 ## [Try Movinwords!](https://github.com/revueltai/movinwords)
-It's another lightweight plugin I created, designed for animating sentences, words, and letters in various creative ways. 
+It's another lightweight plugin I created, designed for animating sentences, words, and letters in various creative ways.
 
 [Give it a go!](https://github.com/revueltai/movinwords)

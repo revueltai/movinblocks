@@ -43,6 +43,7 @@ class Movinblocks {
     __publicField(this, "_payload", /* @__PURE__ */ new Set());
     __publicField(this, "_animation", "fadeIn");
     __publicField(this, "_timingFunction", "ease-in-out");
+    __publicField(this, "_iterationCount", 1);
     __publicField(this, "_duration", 1e3);
     __publicField(this, "_overlap", 0);
     __publicField(this, "_options", {});
@@ -128,6 +129,7 @@ class Movinblocks {
             duration: this._setDuration(index),
             animation: this._setAnimation(index),
             timingFunction: this._setTimingFunction(index),
+            iterationCount: this._setIterationCount(index),
             overlap: this._setOverlap(index)
           });
         }
@@ -165,6 +167,16 @@ class Movinblocks {
     }
     return this._timingFunction;
   }
+  _setIterationCount(index) {
+    if (Utils.isString(this._options.iterationCount)) {
+      return this._options.iterationCount;
+    }
+    if (Utils.isArray(this._options.iterationCount)) {
+      this._validateArrayProp("iterationCount");
+      return this._options.iterationCount[index];
+    }
+    return this._iterationCount;
+  }
   _setOverlap(index) {
     if (index > 0) {
       if (Utils.isNumber(this._options.overlap)) {
@@ -184,6 +196,7 @@ class Movinblocks {
       this._setCssVarPrefix(item);
       Utils.setCssVar(item.el, `${this._cssVarPrefix}duration`, `${item.duration}ms`);
       Utils.setCssVar(item.el, `${this._cssVarPrefix}timing-function`, item.timingFunction);
+      Utils.setCssVar(item.el, `${this._cssVarPrefix}iteration-count`, item.iterationCount);
       if (prevDuration) {
         currDelay += prevDuration - item.overlap;
       }
@@ -269,6 +282,10 @@ class Movinblocks {
     this._options.timingFunction = timingFunction;
     return this;
   }
+  setIterationCount(iterationCount) {
+    this._options.iterationCount = iterationCount;
+    return this;
+  }
   setTimeline(timeline) {
     this._options.timeline = timeline;
     return this;
@@ -306,6 +323,7 @@ class Movinblocks {
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}duration`);
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}delay`);
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}timing-function`);
+      Utils.removeCssVar(item.el, `${this._cssVarPrefix}iteration-count`);
       item.el.removeEventListener("animationstart", () => this._handleAnimationStart(item));
       item.el.removeEventListener("animationend", () => this._handleAnimationEnd(item));
       item.el.removeEventListener("animationiteration", () => this._handleAnimationIteration(item));
