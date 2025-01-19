@@ -2,6 +2,8 @@ export type MbAnimation = 'fadeIn' | 'slideInTop' | 'slideInBottom' | 'slideInLe
 
 export type MbCustomAnimation = string & { __custom: true }
 
+export type MbIterationCount = number | 'infinite'
+
 export type MbTimingFunction = 'ease' | 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | `cubic-bezier(${number}, ${number}, ${number}, ${number})`
 
 export type MbEventName = 'prepare' | 'start' | 'end' | 'destroy' | 'intersect' | 'animationStart' | 'animationEnd' | 'animationIteration'
@@ -39,6 +41,7 @@ export interface MbOptions {
   timeline?: string[]
   animation?: MbAnimation | MbAnimation[] | MbVendorAnimation | MbVendorAnimation[]
   timingFunction?: MbTimingFunction | MbTimingFunction[]
+  iterationCount?: MbIterationCount | MbIterationCount[]
   duration?: number | number[]
   overlap?: number | number[]
   viewportTrigger?: boolean
@@ -50,6 +53,7 @@ export interface MbPayload {
   id: string
   animation: MbAnimation | MbVendorAnimation
   timingFunction: MbTimingFunction
+  iterationCount: MbIterationCount
   duration: number
   overlap?: number
 }

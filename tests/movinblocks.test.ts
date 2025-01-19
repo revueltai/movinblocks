@@ -4,7 +4,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Movinblocks from '../src/movinblocks'
-import { MbAnimation, MbCustomAnimation, MbTimingFunction, MbVendorAnimation } from '../src/types'
+import { MbAnimation, MbCustomAnimation, MbIterationCount, MbTimingFunction, MbVendorAnimation } from '../src/types'
 
 describe('Movinblocks', () => {
   let movinblocks: Movinblocks
@@ -288,6 +288,43 @@ describe('Movinblocks', () => {
 
     it('should throw if the timingFunction array length does not match the timeline length.', () => {
       movinblocks.setTimingFunction(['linear'])
+      expect(() => movinblocks.prepare()).toThrow()
+    })
+  })
+
+  describe('Iteration Count', () => {
+    it('should set the iterationCount for all timeline elements if a iterationCount value is provided.', () => {
+      const iterationCount = 'infinite'
+
+      movinblocks
+        .setIterationCount(iterationCount)
+        .prepare()
+        .start()
+
+      const el1 = document.getElementById('el1')
+      const el2 = document.getElementById('el2')
+
+      expect(movinblocks['_options'].iterationCount).toBe(iterationCount)
+      expect(el1?.style.getPropertyValue('--mb-iteration-count')).toBe(iterationCount)
+      expect(el2?.style.getPropertyValue('--mb-iteration-count')).toBe(iterationCount)
+    })
+
+    it('should set the iterationCount for each timeline element if an array of valid iterationCount values is provided.', () => {
+      const iterationCounts: MbIterationCount[] = [2, 'infinite']
+      movinblocks.setIterationCount(iterationCounts)
+        .prepare()
+        .start()
+
+      const el1 = document.getElementById('el1')
+      const el2 = document.getElementById('el2')
+
+      expect(movinblocks['_options'].iterationCount).toEqual(iterationCounts)
+      expect(el1?.style.getPropertyValue('--mb-iteration-count')).toBe(String(iterationCounts[0]))
+      expect(el2?.style.getPropertyValue('--mb-iteration-count')).toBe(iterationCounts[1])
+    })
+
+    it('should throw if the iterationCount array length does not match the timeline length.', () => {
+      movinblocks.setIterationCount(['infinite'])
       expect(() => movinblocks.prepare()).toThrow()
     })
   })

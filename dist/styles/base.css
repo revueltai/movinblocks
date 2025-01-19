@@ -1,1 +1,1 @@
-.mb{animation-delay:var(--mb-delay);animation-duration:var(--mb-duration);animation-fill-mode:both;animation-name:none;animation-play-state:paused;animation-timing-function:var(--mb-timing-function)}.mb-running{animation-play-state:running}
+.mb{animation-delay:var(--mb-delay);animation-duration:var(--mb-duration);animation-fill-mode:both;animation-iteration-count:var(--mb-iteration-count);animation-name:none;animation-play-state:paused;animation-timing-function:var(--mb-timing-function)}.mb-running{animation-play-state:running}

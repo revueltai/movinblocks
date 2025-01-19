@@ -5,6 +5,7 @@ import {
   MbEventCallback,
   MbEventName,
   MbIntersectionOptions,
+  MbIterationCount,
   MbOptions,
   MbPayload,
   MbTimingFunction,
@@ -20,6 +21,7 @@ class Movinblocks {
   private _payload: Set<MbPayload> = new Set()
   private _animation: MbAnimation = 'fadeIn'
   private _timingFunction: MbTimingFunction = 'ease-in-out'
+  private _iterationCount: MbIterationCount = 1
   private _duration: number = 1000
   private _overlap: number = 0
   private _options: MbOptions = {}
@@ -131,6 +133,7 @@ class Movinblocks {
             duration: this._setDuration(index),
             animation: this._setAnimation(index),
             timingFunction: this._setTimingFunction(index),
+            iterationCount: this._setIterationCount(index),
             overlap: this._setOverlap(index),
           })
         }
@@ -182,6 +185,19 @@ class Movinblocks {
     return this._timingFunction
   }
 
+  _setIterationCount(index: number): MbIterationCount {
+    if (Utils.isString(this._options.iterationCount)) {
+      return this._options.iterationCount
+    }
+
+    if (Utils.isArray(this._options.iterationCount as MbIterationCount[])) {
+      this._validateArrayProp('iterationCount')
+      return (this._options.iterationCount as MbIterationCount[])[index]
+    }
+
+    return this._iterationCount
+  }
+
   _setOverlap(index: number): number {
     if (index > 0) {
       if (Utils.isNumber(this._options.overlap)) {
@@ -206,6 +222,7 @@ class Movinblocks {
 
       Utils.setCssVar(item.el, `${this._cssVarPrefix}duration`, `${item.duration}ms`)
       Utils.setCssVar(item.el, `${this._cssVarPrefix}timing-function`, item.timingFunction)
+      Utils.setCssVar(item.el, `${this._cssVarPrefix}iteration-count`, item.iterationCount)
 
       if (prevDuration) {
         currDelay += prevDuration - item.overlap!
@@ -314,6 +331,11 @@ class Movinblocks {
     return this
   }
 
+  setIterationCount(iterationCount: MbIterationCount | MbIterationCount[]) {
+    this._options.iterationCount = iterationCount
+    return this
+  }
+
   setTimeline(timeline: string[]) {
     this._options.timeline = timeline
     return this
@@ -359,6 +381,7 @@ class Movinblocks {
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}duration`)
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}delay`)
       Utils.removeCssVar(item.el, `${this._cssVarPrefix}timing-function`)
+      Utils.removeCssVar(item.el, `${this._cssVarPrefix}iteration-count`)
 
       item.el.removeEventListener('animationstart', () => this._handleAnimationStart(item))
       item.el.removeEventListener('animationend', () => this._handleAnimationEnd(item))
