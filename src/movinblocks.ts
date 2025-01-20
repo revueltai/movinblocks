@@ -186,8 +186,8 @@ class Movinblocks {
   }
 
   _setIterationCount(index: number): MbIterationCount {
-    if (Utils.isString(this._options.iterationCount)) {
-      return this._options.iterationCount
+    if (Utils.isNumber(this._options.iterationCount)) {
+      return this._options.iterationCount as number
     }
 
     if (Utils.isArray(this._options.iterationCount as MbIterationCount[])) {
