@@ -168,7 +168,7 @@ class Movinblocks {
     return this._timingFunction;
   }
   _setIterationCount(index) {
-    if (Utils.isString(this._options.iterationCount)) {
+    if (Utils.isNumber(this._options.iterationCount)) {
       return this._options.iterationCount;
     }
     if (Utils.isArray(this._options.iterationCount)) {
@@ -335,10 +335,10 @@ class Movinblocks {
     this._duration = 1e3;
     this._overlap = 0;
     this._options = {};
-    this._events = {};
     this._cssBaseClass = "mb";
     this._cssVarPrefix = "";
     this._emit("destroy");
+    this._events = {};
   }
 }
 if (typeof window !== "undefined") {
