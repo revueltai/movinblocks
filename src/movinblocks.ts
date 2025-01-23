@@ -190,6 +190,10 @@ class Movinblocks {
       return this._options.iterationCount as number
     }
 
+    if (this._options.iterationCount === 'infinite') {
+      return this._options.iterationCount
+    }
+
     if (Utils.isArray(this._options.iterationCount as MbIterationCount[])) {
       this._validateArrayProp('iterationCount')
       return (this._options.iterationCount as MbIterationCount[])[index]

@@ -171,6 +171,9 @@ class Movinblocks {
     if (Utils.isNumber(this._options.iterationCount)) {
       return this._options.iterationCount;
     }
+    if (this._options.iterationCount === "infinite") {
+      return this._options.iterationCount;
+    }
     if (Utils.isArray(this._options.iterationCount)) {
       this._validateArrayProp("iterationCount");
       return this._options.iterationCount[index];
