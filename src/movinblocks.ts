@@ -185,7 +185,7 @@ class Movinblocks {
     return this._timingFunction
   }
 
-  _setIterationCount(index: number): MbIterationCount {
+  _setIterationCount(index: number): MbIterationCount {   
     if (Utils.isNumber(this._options.iterationCount)) {
       return this._options.iterationCount as number
     }
@@ -286,6 +286,7 @@ class Movinblocks {
   _emit(eventName: MbEventName, data: any = null) {
     if (this._events[eventName]) {
       this._events[eventName].forEach((cb: MbEventCallback) => cb({
+        context: this,
         elements: this._payload,
         ...data
       }))

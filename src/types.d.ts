@@ -8,7 +8,11 @@ export type MbTimingFunction = 'ease' | 'linear' | 'ease-in' | 'ease-out' | 'eas
 
 export type MbEventName = 'prepare' | 'start' | 'end' | 'destroy' | 'intersect' | 'animationStart' | 'animationEnd' | 'animationIteration'
 
-export type MbEventCallback = (data: any) => void
+export type MbEventCallback = (data: {
+  context: any
+  elements: any
+  [key: string]: any
+}) => void
 
 export type MbEvent = {
   [key in MbEventName]?: MbEventCallback[]

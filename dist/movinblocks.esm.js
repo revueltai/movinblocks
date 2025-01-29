@@ -246,6 +246,7 @@ class Movinblocks {
   _emit(eventName, data = null) {
     if (this._events[eventName]) {
       this._events[eventName].forEach((cb) => cb({
+        context: this,
         elements: this._payload,
         ...data
       }));
